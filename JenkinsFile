@@ -6,7 +6,7 @@ pipeline {
         USERNAME = 'akyadav113114 (from jenkin file environment)'
     }
     parameters {
-        string(name: 'USERNAME', defaultValue: 'akyadav113114 (from jenkin file parameter)', description: 'Username for the Jenkins pipeline')
+        string(name: 'USERNAME', defaultValue: 'akyadav113114 (from jenkin file parameters)', description: 'Username for the Jenkins pipeline')
     }
     stages {
         stage('build') {
@@ -15,26 +15,30 @@ pipeline {
                 echo "this is parameter data: ${params.USERNAME}"
             }
         }
-        stage('test') {
-            steps {
-                echo "Running the test...${env.USERNAME}"
-                sh 'python3 pythoncode/test.py'
+        stage('testDeployParallelExec'){
+            parallel{
+                stage('test') {
+                    steps {
+                        echo "Running the test...${env.USERNAME}"
+                        sh 'python3 pythoncode/test.py'
+                    }
+                }
+                stage('deploy') {
+                    steps {
+                        echo "Deploying the application...${env.USERNAME}"
+                    }
+                }
             }
             post {
                 always {
                     archiveArtifacts artifacts: 'pythoncode/*.py', allowEmptyArchive: true
                 }
                 success {
-                    echo "all tests passed...${env.USERNAME}"
+                    echo "all tests and deployment passed !"
                 }
                 failure {
-                    echo "some tests failed...${env.USERNAME}"
+                    echo "some tests or deployment failed !"
                 }
-            }
-        }
-        stage('deploy') {
-            steps {
-                echo "Deploying the application...${env.USERNAME}"
             }
         }
     }
