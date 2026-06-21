@@ -5,15 +5,19 @@ pipeline {
     environment {
         USERNAME = 'akyadav113114'
     }
+    parameters {
+        string(name: 'USERNAME', defaultValue: 'akyadav113114', description: 'Username for the Jenkins pipeline')
+    }
     stages {
         stage('build') {
             steps {
-                echo "Building the application...${USERNAME}"
+                echo "Building the application...${env.USERNAME}"
+                echo "this is parameter data: ${params.USERNAME}"
             }
         }
         stage('test') {
             steps {
-                echo "Running the test...${USERNAME}"
+                echo "Running the test...${env.USERNAME}"
                 sh 'python3 pythoncode/test.py'
             }
             post {
@@ -21,16 +25,16 @@ pipeline {
                     archiveArtifacts artifacts: 'pythoncode/*.py', allowEmptyArchive: true
                 }
                 success {
-                    echo "all tests passed...${USERNAME}"
+                    echo "all tests passed...${env.USERNAME}"
                 }
                 failure {
-                    echo "some tests failed...${USERNAME}"
+                    echo "some tests failed...${env.USERNAME}"
                 }
             }
         }
         stage('deploy') {
             steps {
-                echo "Deploying the application...${USERNAME}"
+                echo "Deploying the application...${env.USERNAME}"
             }
         }
     }
