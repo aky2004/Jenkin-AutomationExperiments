@@ -3,10 +3,10 @@ pipeline {
         label 'slaveEC2'
     }
     environment {
-        USERNAME = 'akyadav113114'
+        USERNAME = 'akyadav113114 (from jenkin file environment)'
     }
     parameters {
-        string(name: 'USERNAME', defaultValue: 'akyadav113114', description: 'Username for the Jenkins pipeline')
+        string(name: 'USERNAME', defaultValue: 'akyadav113114 (from jenkin file parameter)', description: 'Username for the Jenkins pipeline')
     }
     stages {
         stage('build') {
