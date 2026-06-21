@@ -2,15 +2,18 @@ pipeline {
     agent {
         label 'slaveEC2'
     }
+    environment {
+        USERNAME = 'akyadav113114'
+    }
     stages {
         stage('build') {
             steps {
-                echo "Building the application..."
+                echo "Building the application...${USERNAME}"
             }
         }
         stage('test') {
             steps {
-                echo "Running the test..."
+                echo "Running the test...${USERNAME}"
                 sh 'python3 pythoncode/test.py'
             }
             post {
@@ -18,16 +21,16 @@ pipeline {
                     archiveArtifacts artifacts: 'pythoncode/*.py', allowEmptyArchive: true
                 }
                 success {
-                    echo "all tests passed!"
+                    echo "all tests passed...${USERNAME}"
                 }
                 failure {
-                    echo "some tests failed!"
+                    echo "some tests failed...${USERNAME}"
                 }
             }
         }
         stage('deploy') {
             steps {
-                echo "Deploying the application..."
+                echo "Deploying the application...${USERNAME}"
             }
         }
     }
