@@ -7,25 +7,33 @@ pipeline {
     }
     parameters {
         string(name: 'USERNAME', defaultValue: 'akyadav113114 (from jenkin file parameters)', description: 'Username for the Jenkins pipeline')
+        choice(name: "Gender", choices: ['Male','Female','Other'], description: 'Gender for the Jenkins pipeline')
     }
     stages {
         stage('build') {
             steps {
                 echo "Building the application...${env.USERNAME}"
                 echo "this is parameter data: ${params.USERNAME}"
+                echo "this is gender data: ${params.Gender}"
             }
         }
         stage('testDeployParallelExec'){
             parallel{
                 stage('test') {
+                    agent {
+                        label 'Built-In Node'
+                    }
                     steps {
-                        echo "Running the test...${env.USERNAME}"
+                        echo "Running the test"
                         sh 'python3 pythoncode/test.py'
                     }
                 }
                 stage('deploy') {
+                    agent {
+                        label 'slaveEC2'
+                    }
                     steps {
-                        echo "Deploying the application...${env.USERNAME}"
+                        echo "Deploying the application"
                     }
                 }
             }
