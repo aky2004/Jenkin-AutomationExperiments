@@ -1,5 +1,7 @@
 pipeline {
-    agent none
+    agent {
+        label 'slaveEC2'
+    }
     stages {
         stage('build') {
             steps {
@@ -9,6 +11,18 @@ pipeline {
         stage('test') {
             steps {
                 echo "Running the test..."
+                sh 'python3 pythoncode/test.py'
+            }
+            post {
+                always {
+                    archiveArtifacts artifacts: 'pythoncode/*.py', allowEmptyArchive: true
+                }
+                success {
+                    echo "all tests passed!"
+                }
+                failure {
+                    echo "some tests failed!"
+                }
             }
         }
         stage('deploy') {
