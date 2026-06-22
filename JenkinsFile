@@ -71,12 +71,16 @@ pipeline {
             }
             post {
                 success {
-                    file = load('pythoncode/myScript.groovy')
-                    file.hello()
+                    script {
+                        def file = load('myScript.groovy')
+                        file.hello()
+                    }
                 }
                 failure {
-                    file = load('pythoncode/myScript.groovy')
-                    file.hello()
+                    script {
+                        def file = load('myScript.groovy')
+                        file.hello()
+                    }
                 }
             }
         }
