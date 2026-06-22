@@ -7,40 +7,41 @@ pipeline {
     }
     parameters {
         string(name: 'USERNAME', defaultValue: 'akyadav113114 (from jenkin file parameters)', description: 'Username for the Jenkins pipeline')
-        choice(name: "Gender", choices: ['Male','Female','Other'], description: 'Gender for the Jenkins pipeline')
+        choice(name: "DeployState", choices: ['Dream','Prod'], description: 'deployment choice')
     }
     stages {
         stage('build') {
             steps {
                 echo "Building the application...${env.USERNAME}"
                 echo "this is parameter data: ${params.USERNAME}"
-                echo "this is gender data: ${params.Gender}"
             }
         }
         stage('testDeployParallelExec'){
             parallel{
                 stage('test') {
-                    agent {
-                        label 'Built-In Node'
-                    }
+                    // agent {
+                    //     label 'Built-In Node'
+                    // }
                     steps {
                         echo "Running the test"
                         sh 'python3 pythoncode/test.py'
                     }
+                    post {
+                        always {
+                            stash includes: 'pythoncode/*.py', name: 'py_artifact_stash', allowEmpty: true
+                        }
+                    }
                 }
-                stage('deploy') {
+                stage('deployInDreams') {
                     agent {
                         label 'slaveEC2'
                     }
                     steps {
-                        echo "Deploying the application"
+                        echo "Deploying the application...in dreams."
                     }
                 }
             }
             post {
-                always {
-                    archiveArtifacts artifacts: 'pythoncode/*.py', allowEmptyArchive: true
-                }
                 success {
                     echo "all tests and deployment passed !"
                 }
@@ -48,6 +49,14 @@ pipeline {
                     echo "some tests or deployment failed !"
                 }
             }
+        }
+        stage('deployInRealLife'){
+            when{expression{params.DeployState == 'Prod'} beforeAgent true}
+            agent {label 'slaveEC2'}    
+            steps{
+                unstash 'py_artifact_stash'
+                echo "Deploying the application...in real life."
+            }   
         }
     }
 }
