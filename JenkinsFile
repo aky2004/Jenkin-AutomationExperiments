@@ -44,13 +44,9 @@ pipeline {
             post {
                 success {
                     echo "all tests and deployment passed !"
-                    file = load('pythoncode/myScript.groovy')
-                    file.hello()
                 }
                 failure {
                     echo "some tests or deployment failed !"
-                    file = load('pythoncode/myScript.groovy')
-                    file.hello()
                 }
             }
         }
@@ -67,8 +63,21 @@ pipeline {
             }
 
             steps {
+                timeout(time: 1, unit: 'DAYS') {
+                    input message: "do you want to deploy in real life?"
+                }
                 unstash 'py_artifact_stash'
                 echo "Deploying the application...in real life."
+            }
+            post {
+                success {
+                    file = load('pythoncode/myScript.groovy')
+                    file.hello()
+                }
+                failure {
+                    file = load('pythoncode/myScript.groovy')
+                    file.hello()
+                }
             }
         }
     }
