@@ -44,9 +44,13 @@ pipeline {
             post {
                 success {
                     echo "all tests and deployment passed !"
+                    file = load('pythoncode/myScript.groovy')
+                    file.hello()
                 }
                 failure {
                     echo "some tests or deployment failed !"
+                    file = load('pythoncode/myScript.groovy')
+                    file.hello()
                 }
             }
         }
