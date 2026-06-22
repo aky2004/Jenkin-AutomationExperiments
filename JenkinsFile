@@ -50,13 +50,22 @@ pipeline {
                 }
             }
         }
-        stage('deployInRealLife'){
-            when{expression{params.DeployState == 'Prod'} beforeAgent true}
-            agent {label 'slaveEC2'}    
-            steps{
+        stage('deployInRealLife') {
+            when {
+                beforeAgent true
+                expression {
+                    params.DeployState == 'Prod'
+                }
+            }
+
+            agent {
+                label 'slaveEC2'
+            }
+
+            steps {
                 unstash 'py_artifact_stash'
                 echo "Deploying the application...in real life."
-            }   
+            }
         }
     }
 }
